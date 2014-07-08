@@ -1,0 +1,255 @@
+##
+## This file is part of the DSLogic-hdl project.
+##
+## Copyright (C) 2014 DreamSourceLab <support@dreamsourcelab.com>
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+##
+
+#crystal clock - use 50MHz onboard oscillator
+NET "sys_clk" TNM_NET = "sys_clk";
+TIMESPEC TS_sys_clk = PERIOD "sys_clk" 20.83 ns HIGH 50 %;
+
+# usb gpif interface clock
+NET "cclk" TNM_NET = "cclk";
+TIMESPEC TS_cclk = PERIOD "cclk" 33 ns HIGH 50 %;
+
+# external Clock - use Auxiliary clock
+NET "ext_clk" IOSTANDARD = LVCMOS18;
+NET "ext_clk" PULLDOWN;
+NET "ext_clk" TNM_NET = "ext_clk";
+TIMESPEC TS_ext_clk = PERIOD "ext_clk" 10 ns HIGH 50 %;
+
+#False path between async clocks
+NET "usb_clk" TNM_NET = "usb_clk_grp";
+NET "core_clk" TNM_NET = "core_clk_grp";
+#NET "sd_clk" TNM_NET = FFS "sd_clk_grp";
+NET "sample_clk" TNM_NET = "sample_clk_grp";
+NET "ext_clk" TNM_NET = "ext_clk_grp";
+NET "int_clk_2x" TNM_NET = "int_clk_2x_grp";
+TIMESPEC TS_usb2core = FROM "usb_clk_grp" TO "core_clk_grp" TIG ;
+TIMESPEC TS_usb2sample = FROM "usb_clk_grp" TO "sample_clk_grp" TIG ;
+TIMESPEC TS_usb2ext = FROM "usb_clk_grp" TO "ext_clk_grp" TIG ;
+TIMESPEC TS_core2usb = FROM "core_clk_grp" TO "usb_clk_grp" TIG ;
+TIMESPEC TS_sample2usb = FROM "sample_clk_grp" TO "usb_clk_grp" TIG ;
+TIMESPEC TS_ext2usb = FROM "ext_clk_grp" TO "usb_clk_grp" TIG ;
+#TIMESPEC TS_sample2usb = FROM "sample_clk_grp" TO "usb_clk_grp" TIG; 
+#TIMESPEC TS_sd2core = FROM "sd_clk_grp" TO "core_clk_grp" TIG; 
+#TIMESPEC TS_core2sd = FROM "core_clk_grp" TO "sd_clk_grp" TIG; 
+TIMESPEC TS_sample2core = FROM "sample_clk_grp" TO "core_clk_grp" TIG ;
+TIMESPEC TS_usb2int2x = FROM "usb_clk_grp" TO "int_clk_2x_grp" TIG ;
+
+#ignore BUFGMUX S-input setup to I0 and I1 inputs
+#because runt pulse in ~sample_en will hurt nothing
+INST "sample_en" TNM_NET = "bufgmux_s";
+TIMESPEC TS_bufgmux = FROM "bufgmux_s" TO "ext_clk" TIG ;
+
+NET "cclk" CLOCK_DEDICATED_ROUTE = FALSE;
+PIN "core_dcm/clkout5_buf.O" CLOCK_DEDICATED_ROUTE = FALSE;
+
+########
+# SDRAM cons
+########
+NET "sd_dq[0]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_dq[10]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_dq[11]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_dq[12]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_dq[13]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_dq[14]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_dq[15]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_dq[1]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_dq[2]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_dq[3]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_dq[4]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_dq[5]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_dq[6]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_dq[7]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_dq[8]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_dq[9]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_addr[0]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_addr[10]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_addr[11]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_addr[12]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_addr[1]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_addr[2]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_addr[3]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_addr[4]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_addr[5]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_addr[6]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_addr[7]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_addr[8]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_addr[9]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_ba[0]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_ba[1]" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_ras_" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_cas_" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_we_" IOBDELAY = NONE | NODELAY | pulldown;
+NET "sd_cs_" IOBDELAY = NONE | NODELAY | pulldown;
+
+INST "sdramc/sdram_io/iob_*" IOB = TRUE | IOBDELAY = NONE | NODELAY;
+INST "sdramc/sdram_io/sdram_dqi*" IOB = TRUE | IOBDELAY = NONE | NODELAY;
+INST "sdramc/sdram_io/iob_dq_oe*" KEEP;
+
+NET "sd_dq[*]" OFFSET = OUT 3 ns BEFORE "sys_clk";
+NET "sd_addr[*]" OFFSET = OUT 3 ns BEFORE "sys_clk";
+NET "sd_ba[*]" OFFSET = OUT 3 ns BEFORE "sys_clk";
+NET "sd_ras_" OFFSET = OUT 3 ns BEFORE "sys_clk";
+NET "sd_cas_" OFFSET = OUT 3 ns BEFORE "sys_clk";
+NET "sd_we_" OFFSET = OUT 3 ns BEFORE "sys_clk";
+NET "sd_cs_" OFFSET = OUT 3 ns BEFORE "sys_clk";
+NET "sd_dq[*]" OFFSET = IN 3 ns BEFORE "sys_clk";
+
+########
+# LOC
+########
+NET "sys_clk" IOSTANDARD = LVCMOS18;
+NET "sys_clk" LOC = P124;
+NET "cclk" IOSTANDARD = LVCMOS18;
+NET "cclk" LOC = P70;
+NET "ext_clk" IOSTANDARD = LVCMOS18;
+NET "ext_clk" LOC = P56;
+NET "sys_rst" IOSTANDARD = LVCMOS18;
+NET "sys_rst" LOC = P51;
+NET "sys_clr" IOSTANDARD = LVCMOS18;
+NET "sys_clr" LOC = P34;
+NET "sys_en" IOSTANDARD = LVCMOS18;
+NET "sys_en" LOC = P35;
+NET "ext_trig" IOSTANDARD = LVCMOS18;
+NET "ext_trig" LOC = P66;
+NET "ext_out" IOSTANDARD = LVCMOS18;
+NET "ext_out" LOC = P67;
+
+NET "ledn"	IOSTANDARD = LVCMOS18;
+NET "ledn"	LOC = P12;
+
+NET "usb_en" IOSTANDARD = LVCMOS18;
+NET "usb_en" LOC = P64;
+NET "usb_rdwr" IOSTANDARD = LVCMOS18;
+NET "usb_rdwr" LOC = P47;
+NET "usb_rdy" IOSTANDARD = LVCMOS18;
+NET "usb_rdy" LOC = P39;
+NET "usb_overflow" IOSTANDARD = LVCMOS18;
+NET "usb_overflow" LOC = P33;
+
+NET "ext_data[0]" IOSTANDARD = LVCMOS18;
+NET "ext_data[0]" LOC = P105;
+NET "ext_data[1]" IOSTANDARD = LVCMOS18;
+NET "ext_data[1]" LOC = P104;
+NET "ext_data[2]" IOSTANDARD = LVCMOS18;
+NET "ext_data[2]" LOC = P102;
+NET "ext_data[3]" IOSTANDARD = LVCMOS18;
+NET "ext_data[3]" LOC = P101;
+NET "ext_data[4]" IOSTANDARD = LVCMOS18;
+NET "ext_data[4]" LOC = P100;
+NET "ext_data[5]" IOSTANDARD = LVCMOS18;
+NET "ext_data[5]" LOC = P99;
+NET "ext_data[6]" IOSTANDARD = LVCMOS18;
+NET "ext_data[6]" LOC = P98;
+NET "ext_data[7]" IOSTANDARD = LVCMOS18;
+NET "ext_data[7]" LOC = P97;
+NET "ext_data[8]" IOSTANDARD = LVCMOS18;
+NET "ext_data[8]" LOC = P83;
+NET "ext_data[9]" IOSTANDARD = LVCMOS18;
+NET "ext_data[9]" LOC = P82;
+NET "ext_data[10]" IOSTANDARD = LVCMOS18;
+NET "ext_data[10]" LOC = P81;
+NET "ext_data[11]" IOSTANDARD = LVCMOS18;
+NET "ext_data[11]" LOC = P80;
+NET "ext_data[12]" IOSTANDARD = LVCMOS18;
+NET "ext_data[12]" LOC = P79;
+NET "ext_data[13]" IOSTANDARD = LVCMOS18;
+NET "ext_data[13]" LOC = P78;
+NET "ext_data[14]" IOSTANDARD = LVCMOS18;
+NET "ext_data[14]" LOC = P75;
+NET "ext_data[15]" IOSTANDARD = LVCMOS18;
+NET "ext_data[15]" LOC = P74;
+
+NET "usb_data[0]" IOSTANDARD = LVCMOS18;
+NET "usb_data[0]" LOC = P65;
+NET "usb_data[1]" IOSTANDARD = LVCMOS18;
+NET "usb_data[1]" LOC = P62;
+NET "usb_data[2]" IOSTANDARD = LVCMOS18;
+NET "usb_data[2]" LOC = P61;
+NET "usb_data[3]" IOSTANDARD = LVCMOS18;
+NET "usb_data[3]" LOC = P46;
+NET "usb_data[4]" IOSTANDARD = LVCMOS18;
+NET "usb_data[4]" LOC = P45;
+NET "usb_data[5]" IOSTANDARD = LVCMOS18;
+NET "usb_data[5]" LOC = P44;
+NET "usb_data[6]" IOSTANDARD = LVCMOS18;
+NET "usb_data[6]" LOC = P43;
+NET "usb_data[7]" IOSTANDARD = LVCMOS18;
+NET "usb_data[7]" LOC = P48;
+NET "usb_data[8]" IOSTANDARD = LVCMOS18;
+NET "usb_data[8]" LOC = P27;
+NET "usb_data[9]" IOSTANDARD = LVCMOS18;
+NET "usb_data[9]" LOC = P26;
+NET "usb_data[10]" IOSTANDARD = LVCMOS18;
+NET "usb_data[10]" LOC = P24;
+NET "usb_data[11]" IOSTANDARD = LVCMOS18;
+NET "usb_data[11]" LOC = P23;
+NET "usb_data[12]" IOSTANDARD = LVCMOS18;
+NET "usb_data[12]" LOC = P22;
+NET "usb_data[13]" IOSTANDARD = LVCMOS18;
+NET "usb_data[13]" LOC = P16;
+NET "usb_data[14]" IOSTANDARD = LVCMOS18;
+NET "usb_data[14]" LOC = P17;
+NET "usb_data[15]" IOSTANDARD = LVCMOS18;
+NET "usb_data[15]" LOC = P21;
+
+NET "sd_clk_out" LOC = P127 | IOSTANDARD = LVCMOS18;
+NET "sd_clk_fb" LOC = P126 | IOSTANDARD = LVCMOS18;
+NET "sd_addr[0]" LOC = P8 | IOSTANDARD = LVCMOS18;
+NET "sd_addr[1]" LOC = P9 | IOSTANDARD = LVCMOS18;
+NET "sd_addr[2]" LOC = P10 | IOSTANDARD = LVCMOS18;
+NET "sd_addr[3]" LOC = P11 | IOSTANDARD = LVCMOS18;
+NET "sd_addr[4]" LOC = P140 | IOSTANDARD = LVCMOS18;
+NET "sd_addr[5]" LOC = P139 | IOSTANDARD = LVCMOS18;
+NET "sd_addr[6]" LOC = P138 | IOSTANDARD = LVCMOS18;
+NET "sd_addr[7]" LOC = P137 | IOSTANDARD = LVCMOS18;
+NET "sd_addr[8]" LOC = P134 | IOSTANDARD = LVCMOS18;
+NET "sd_addr[9]" LOC = P133 | IOSTANDARD = LVCMOS18;
+NET "sd_addr[10]" LOC = P7 | IOSTANDARD = LVCMOS18;
+NET "sd_addr[11]" LOC = P132 | IOSTANDARD = LVCMOS18;
+NET "sd_addr[12]" LOC = P131 | IOSTANDARD = LVCMOS18;
+NET "sd_ba[0]" LOC = P5 | IOSTANDARD = LVCMOS18;
+NET "sd_ba[1]" LOC = P6 | IOSTANDARD = LVCMOS18;
+NET "sd_dq[0]" LOC = P84 | IOSTANDARD = LVCMOS18;
+NET "sd_dq[1]" LOC = P87 | IOSTANDARD = LVCMOS18;
+NET "sd_dq[2]" LOC = P92 | IOSTANDARD = LVCMOS18;
+NET "sd_dq[3]" LOC = P94 | IOSTANDARD = LVCMOS18;
+NET "sd_dq[4]" LOC = P95 | IOSTANDARD = LVCMOS18;
+NET "sd_dq[5]" LOC = P93 | IOSTANDARD = LVCMOS18;
+NET "sd_dq[6]" LOC = P88 | IOSTANDARD = LVCMOS18;
+NET "sd_dq[7]" LOC = P85 | IOSTANDARD = LVCMOS18;
+NET "sd_dq[8]" LOC = P121 | IOSTANDARD = LVCMOS18;
+NET "sd_dq[9]" LOC = P120 | IOSTANDARD = LVCMOS18;
+NET "sd_dq[10]" LOC = P119 | IOSTANDARD = LVCMOS18;
+NET "sd_dq[11]" LOC = P118 | IOSTANDARD = LVCMOS18;
+NET "sd_dq[12]" LOC = P117 | IOSTANDARD = LVCMOS18;
+NET "sd_dq[13]" LOC = P116 | IOSTANDARD = LVCMOS18;
+NET "sd_dq[14]" LOC = P115 | IOSTANDARD = LVCMOS18;
+NET "sd_dq[15]" LOC = P114 | IOSTANDARD = LVCMOS18;
+NET "sd_ras_" LOC = P2 | IOSTANDARD = LVCMOS18;
+NET "sd_cas_" LOC = P143 | IOSTANDARD = LVCMOS18;
+NET "sd_we_" LOC = P142 | IOSTANDARD = LVCMOS18;
+NET "sd_cs_" LOC = P1 | IOSTANDARD = LVCMOS18;
+NET "sd_dqml" LOC = P141 | IOSTANDARD = LVCMOS18;
+NET "sd_dqmh" LOC = P123 | IOSTANDARD = LVCMOS18;
+
+NET "scl" LOC = P57 | IOSTANDARD = LVCMOS18;
+NET "sda" LOC = P58 | IOSTANDARD = LVCMOS18;
+
+CONFIG VCCAUX = "3.3";

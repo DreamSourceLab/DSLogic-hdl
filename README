@@ -1,0 +1,26 @@
+-------------------------------------------------------------------------------
+README
+-------------------------------------------------------------------------------
+
+DSLogic-hdl is an Open-source hdl design for spartan-6 FPGA of DSLogic
+DSLogic project: www.dreamsourcelab.com
+
+Status
+------
+
+DSLogic-hdl is in a usable state and has had official
+tarball releases.
+
+
+Copyright and license
+---------------------
+
+DSLogic-hdl is licensed under the terms of the GNU General Public
+License (GPL), version 2 or later.
+
+
+Website
+-------
+
+ http://www.dreamsourcelab.com
+
